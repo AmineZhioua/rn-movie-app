@@ -3,8 +3,8 @@ import React from 'react'
 
 const search = () => {
   return (
-    <View>
-      <Text>search</Text>
+    <View className='bg-dark-200 flex-1'>
+      <Text className='text-red-500'>search</Text>
     </View>
   )
 }
