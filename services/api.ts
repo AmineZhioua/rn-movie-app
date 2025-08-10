@@ -1,40 +1,27 @@
-import axios from 'axios';
-
 export const TMDB_CONFIG = {
     BASE_URL: "https://api.themoviedb.org/3",
-    API_KEY: process.env.TMDB_KEY,
+    API_KEY: process.env.EXPO_PUBLIC_TMDB_KEY,
     headers: {
         accept: "application/json",
-        Authorization: `Bearer ${process.env.TMDB_KEY}`
+        Authorization: `Bearer ${process.env.EXPO_PUBLIC_TMDB_KEY}`
     }
 };
 
 
 export const fetchMovies = async({ query }: { query: string }) => {
-    const url = query ? `/search/movie?query=${encodeURIComponent(query)}` : "/discover/movie?sort_by=popularity.desc";
+    console.log("KEY", process.env.EXPO_PUBLIC_TMDB_KEY)
+    const url = query ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(query)}` 
+            : `${TMDB_CONFIG.BASE_URL}/discover/movie?sort_by=popularity.desc`;
 
-    const fetchResponse = await axios.get(`${TMDB_CONFIG.BASE_URL}${url}`, {
+    const fetchResponse = await fetch(url, {
+        method: 'GET',
         headers: TMDB_CONFIG.headers
     });
 
-    if(fetchResponse.status === 200) {
-        console.log("success", fetchResponse.data.response);
-    } else {
-        console.error(fetchResponse.statusText);
+    if(!fetchResponse.ok) {
+        throw new Error('Failed to fetch movies');
     }
+
+    const data = await fetchResponse.json();
+    return data.results;
 }
-
-
-const url = 'https://api.themoviedb.org/3/authentication';
-const options = {
-  method: 'GET',
-  headers: {
-    accept: 'application/json',
-    Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiNTRkNGFmNmYzNTdhMDQxMTc3YWM2N2NmOGEzMWE5MyIsIm5iZiI6MTc1NDc2NTcxOS43MzMsInN1YiI6IjY4OTc5OTk3NTc3ODY5NWY5ZmUyNDU4NyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.HTO7OQJwxHci5Dt_Ia76NORGgCPTdZZCDQlRuGmuzaU'
-  }
-};
-
-fetch(url, options)
-  .then(res => res.json())
-  .then(json => console.log(json))
-  .catch(err => console.error(err));
