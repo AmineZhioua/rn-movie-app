@@ -21,10 +21,6 @@ const Search = () => {
     const searchFn = setTimeout(async() => {
       if(searchQuery.trim()) {
         await loadMovies();
-
-        if(movies?.length > 0 && movies?.[0]) {
-          await updateSearchCount(searchQuery, movies[0]);
-        }
       } else {
         reset();
       }
@@ -32,6 +28,16 @@ const Search = () => {
 
     return () => clearTimeout(searchFn);
   }, [searchQuery]);
+
+  useEffect(() => {
+    const updateCountFn = async() => {fqlse
+      if(movies?.length > 0 && movies?.[0]) {
+        await updateSearchCount(searchQuery, movies[0]);
+      }
+    }
+
+    updateCountFn();
+  }, [movies]);
 
 
   return (
