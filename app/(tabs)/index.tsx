@@ -4,9 +4,17 @@ import { useRouter } from "expo-router";
 import useFetch from "@/services/useFetch";
 import { fetchMovies } from "@/services/api";
 import MovieCard from "@/components/MovieCard";
+import { getTrendingMovies } from "@/services/appwrite";
 
 export default function Index() {
   const router = useRouter();
+
+  const {
+    data: trendingMovies,
+    loading: trendingLoading,
+    error: trendingError
+  } = useFetch(getTrendingMovies);
+
   const { 
     data: movies, 
     loading: moviesLoading, 
@@ -27,20 +35,26 @@ export default function Index() {
           className="w-12 h-10 mt-20 mb-5 mx-auto" 
         />
 
-        {moviesLoading ? (
+        {moviesLoading || trendingLoading ? (
           <ActivityIndicator 
             size={'large'}
             color={'#fff'}
             className="self-center"
           />
-        ) : moviesError ? (
-          <Text>Error: {moviesError?.message}</Text>
+        ) : moviesError || trendingError ? (
+          <Text>Error: {moviesError?.message || trendingError?.message}</Text>
         ) : (
           <View className="flex-1 mt-5">
             <SearchBar 
               onPress={() => router.push('/search')}
               placeholder="Search for a movie..."
             />
+
+            {trendingMovies && (
+              <View className="mt-10">
+                <Text className="text-white text-2xl font-bold text-blue-400">Trending Movies</Text>
+              </View>
+            )}
             <>
               <Text className="text-xl text-white font-bold mt-5 mb-3">Latest Movies:</Text>
               <FlatList 
